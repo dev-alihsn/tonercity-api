@@ -22,16 +22,19 @@ class CategorySeeder extends Seeder
                 'parent_id' => null,
                 'sort_order' => $index + 1,
                 'is_active' => true,
+                'slug' => Str::slug($names['en']),
             ]);
             CategoryTranslation::create([
                 'category_id' => $category->id,
                 'locale' => 'en',
                 'name' => $names['en'],
+                'slug' => Str::slug($names['en']),
             ]);
             CategoryTranslation::create([
                 'category_id' => $category->id,
                 'locale' => 'ar',
                 'name' => $names['ar'],
+                'slug' => Str::slug($names['ar']),
             ]);
         }
     }

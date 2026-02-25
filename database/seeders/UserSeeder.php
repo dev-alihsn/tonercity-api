@@ -17,7 +17,6 @@ class UserSeeder extends Seeder
                 'name' => 'Admin User',
                 'password' => Hash::make('password'),
                 'phone' => '+20100000001',
-                'language' => 'en',
             ]
         );
         $adminUser->assignRole('admin');
@@ -29,7 +28,6 @@ class UserSeeder extends Seeder
                 'name' => 'Test Customer',
                 'password' => Hash::make('password'),
                 'phone' => '+20100000002',
-                'language' => 'en',
             ]
         );
         $testCustomer->assignRole('customer');

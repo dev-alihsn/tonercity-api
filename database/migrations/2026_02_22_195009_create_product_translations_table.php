@@ -12,11 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 5);
-            $table->string('name');
+            $table->string('title');
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
 
-            $table->unique(['product_id', 'locale']);
+            $table->unique(['product_id', 'slug']);
         });
     }
 
