@@ -111,4 +111,14 @@ class Product extends Model
     {
         return $this->inventory && $this->inventory->quantity <= $this->inventory->low_stock_level;
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class);
+    }
 }
