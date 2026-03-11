@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
-            $table->string('slug')->unique();
             $table->foreignId('logo_id')->nullable()->constrained('media')->nullOnDelete();
             $table->timestamps();
         });

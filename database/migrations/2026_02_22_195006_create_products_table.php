@@ -11,11 +11,18 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vendor_id')->nullable()->constrained('vendors')->onDelete('set null');
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('sku')->unique();
             $table->decimal('price', 10, 2);
+            $table->decimal('sale_price', 10, 2)->nullable();
             $table->foreignId('thumbnail_id')->nullable()->constrained('media')->nullOnDelete();
             $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('category_product', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

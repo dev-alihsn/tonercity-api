@@ -2,7 +2,6 @@
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductTranslation;
 use App\Models\User;
 use App\Models\Wishlist;
 
@@ -10,16 +9,10 @@ beforeEach(function (): void {
     $this->user = User::factory()->customer()->create();
     $this->token = $this->user->createToken('api')->plainTextToken;
     $this->category = Category::factory()->withoutTranslations()->create(['parent_id' => null]);
-    $this->product = Product::factory()->withoutTranslations()->create([
-        'category_id' => $this->category->id,
+    $this->product = Product::factory()->create([
         'is_active' => true,
     ]);
-    ProductTranslation::create([
-        'product_id' => $this->product->id,
-        'locale' => 'en',
-        'name' => 'Wishlist Product',
-        'description' => 'Desc',
-    ]);
+    $this->product->categories()->attach($this->category->id);
 });
 
 test('authenticated user can list empty wishlist', function () {
@@ -80,8 +73,8 @@ test('authenticated user can remove product from wishlist', function () {
 });
 
 test('wishlist list returns only active products', function () {
-    $inactive = Product::factory()->withoutTranslations()->create(['category_id' => $this->category->id, 'is_active' => false]);
-    ProductTranslation::create(['product_id' => $inactive->id, 'locale' => 'en', 'name' => 'Inactive', 'description' => '']);
+    $inactive = Product::factory()->create(['is_active' => false]);
+    $inactive->categories()->attach($this->category->id);
     Wishlist::query()->create(['user_id' => $this->user->id, 'product_id' => $inactive->id]);
     Wishlist::query()->create(['user_id' => $this->user->id, 'product_id' => $this->product->id]);
 

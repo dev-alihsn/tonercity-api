@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Category>
@@ -36,11 +37,15 @@ class CategoryFactory extends Factory
         return $this->afterCreating(function (Category $category) {
             // Only create translations if enabled
             if ($this->createTranslations) {
+                $enName = fake()->words(2, true);
+                $arName = $this->arabicCategoryName();
+
                 // English translation
                 CategoryTranslation::create([
                     'category_id' => $category->id,
                     'locale' => 'en',
-                    'name' => fake()->words(2, true),
+                    'name' => $enName,
+                    'slug' => Str::slug($enName),
                     'description' => fake()->sentence(),
                 ]);
 
@@ -48,7 +53,8 @@ class CategoryFactory extends Factory
                 CategoryTranslation::create([
                     'category_id' => $category->id,
                     'locale' => 'ar',
-                    'name' => $this->arabicCategoryName(),
+                    'name' => $arName,
+                    'slug' => Str::slug($arName),
                     'description' => $this->arabicCategoryDescription(),
                 ]);
             }

@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use App\Models\Media;
 use App\Models\Product;
 use App\Models\ProductTranslation;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Product>
@@ -23,7 +23,6 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'category_id' => Category::factory(),
             'sku' => 'SKU-'.strtoupper(fake()->unique()->bothify('???-####')),
             'price' => fake()->randomFloat(2, 10, 500),
             'thumbnail_id' => null,
@@ -41,11 +40,15 @@ class ProductFactory extends Factory
         return $this->afterCreating(function (Product $product) {
             // Only create translations if enabled
             if ($this->createTranslations) {
+                $enTitle = fake()->words(3, true);
+                $arTitle = $this->arabicProductName();
+
                 // English translation
                 ProductTranslation::create([
                     'product_id' => $product->id,
                     'locale' => 'en',
-                    'name' => fake()->words(3, true),
+                    'title' => $enTitle,
+                    'slug' => Str::slug($enTitle),
                     'description' => fake()->sentences(3, true),
                 ]);
 
@@ -53,7 +56,8 @@ class ProductFactory extends Factory
                 ProductTranslation::create([
                     'product_id' => $product->id,
                     'locale' => 'ar',
-                    'name' => $this->arabicProductName(),
+                    'title' => $arTitle,
+                    'slug' => Str::slug($arTitle),
                     'description' => $this->arabicDescription(),
                 ]);
             }

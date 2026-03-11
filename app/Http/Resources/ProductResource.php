@@ -20,14 +20,13 @@ class ProductResource extends JsonResource
         return [
             'locale' => $locale,
             'id' => $this->id,
-            'category_id' => $this->category_id,
             'sku' => $this->sku,
             'price' => (float) $this->price,
-            'name' => $translation?->name,
+            'name' => $translation?->title,
             'description' => $translation?->description,
             'is_active' => $this->is_active,
             'thumbnail_url' => $this->thumbnail?->getUrl(),
-            'category' => new CategoryResource($this->whenLoaded('category')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'inventory' => $this->whenLoaded('inventory', fn () => [
                 'quantity' => $this->inventory->quantity,
                 'low_stock_level' => $this->inventory->low_stock_level,

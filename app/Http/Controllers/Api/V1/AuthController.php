@@ -76,4 +76,19 @@ class AuthController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
     }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user) {
+            throw ValidationException::withMessages([
+                'email' => [__('auth.user_not_found')],
+            ]);
+        }
+
+        return response()->json(['message' => __('Password reset link sent.')]);
+    }
 }

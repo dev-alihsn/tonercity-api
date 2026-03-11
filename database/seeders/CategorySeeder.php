@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -22,7 +23,6 @@ class CategorySeeder extends Seeder
                 'parent_id' => null,
                 'sort_order' => $index + 1,
                 'is_active' => true,
-                'slug' => Str::slug($names['en']),
             ]);
             CategoryTranslation::create([
                 'category_id' => $category->id,

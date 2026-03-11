@@ -4,23 +4,16 @@ use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\ProductTranslation;
 use App\Models\User;
 
 beforeEach(function (): void {
     $this->user = User::factory()->customer()->create();
     $this->token = $this->user->createToken('api')->plainTextToken;
     $this->category = Category::factory()->withoutTranslations()->create(['parent_id' => null]);
-    $this->product = Product::factory()->withoutTranslations()->create([
-        'category_id' => $this->category->id,
+    $this->product = Product::factory()->create([
         'is_active' => true,
     ]);
-    ProductTranslation::create([
-        'product_id' => $this->product->id,
-        'locale' => 'en',
-        'name' => 'Test Product',
-        'description' => 'Desc',
-    ]);
+    $this->product->categories()->attach($this->category->id);
     Inventory::factory()->create(['product_id' => $this->product->id, 'quantity' => 10]);
 });
 
@@ -98,7 +91,8 @@ test('authenticated user can update cart item quantity', function () {
 });
 
 test('update cart item fails when product not in cart', function () {
-    $otherProduct = Product::factory()->create(['category_id' => $this->category->id, 'is_active' => true]);
+    $otherProduct = Product::factory()->create(['is_active' => true]);
+    $otherProduct->categories()->attach($this->category->id);
     Inventory::factory()->create(['product_id' => $otherProduct->id]);
 
     $response = $this->putJson('/api/v1/cart/items/'.$otherProduct->id, [

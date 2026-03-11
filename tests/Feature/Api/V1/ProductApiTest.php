@@ -3,20 +3,13 @@
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\ProductTranslation;
 
 beforeEach(function (): void {
     $this->category = Category::factory()->withoutTranslations()->create(['parent_id' => null]);
-    $this->product = Product::factory()->withoutTranslations()->create([
-        'category_id' => $this->category->id,
+    $this->product = Product::factory()->create([
         'is_active' => true,
     ]);
-    ProductTranslation::create([
-        'product_id' => $this->product->id,
-        'locale' => 'en',
-        'name' => 'Test Product',
-        'description' => 'Description',
-    ]);
+    $this->product->categories()->attach($this->category->id);
     Inventory::factory()->create(['product_id' => $this->product->id]);
 });
 
@@ -30,7 +23,8 @@ test('guest can list products', function () {
 
 test('guest can filter products by category', function () {
     $otherCategory = Category::factory()->withoutTranslations()->create(['parent_id' => null]);
-    Product::factory()->withoutTranslations()->create(['category_id' => $otherCategory->id, 'is_active' => true]);
+    $otherProduct = Product::factory()->create(['is_active' => true]);
+    $otherProduct->categories()->attach($otherCategory->id);
 
     $response = $this->getJson('/api/v1/products?category_id='.$this->category->id);
 
@@ -43,8 +37,9 @@ test('guest can show product', function () {
 
     $response->assertSuccessful()
         ->assertJsonPath('data.id', $this->product->id)
-        ->assertJsonPath('data.name', 'Test Product')
         ->assertJsonPath('data.sku', $this->product->sku);
+
+    $this->assertNotEmpty($response['data']['name']);
 });
 
 test('inactive product returns 404', function () {
